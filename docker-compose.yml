@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  db:
+    image: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_DB: yandex_zen_clone
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  web:
+    build: .
+    command: gunicorn --bind 0.0.0.0:8000 yandex_zen_clone.wsgi:application
+    volumes:
+      - .:/app
+    ports:
+      - "8001:8000"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/yandex_zen_clone
+
+volumes:
+  postgres_data:
